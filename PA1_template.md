@@ -1,12 +1,12 @@
 # PA1_template
 
-##Loading the data
+##Loading the data from the activity.csv file provided
 
-Reading the file **activity.csv** into a dataframe **dfAct**. This file have to be copied into working directory.
+Reading the file **activity.csv** into a variable AMD for Activity Monitoring Device.
 
 
 ```r
-dfAct<-read.csv("activity.csv")
+AMD <- read.csv("activity.csv")
 ```
 
 ##Mean total number of steps taken per day
@@ -15,11 +15,11 @@ Summarizing number of steps for each day. As a result get the dataframe **StepsB
 
 
 ```r
-StepsByDays<-aggregate(dfAct$steps,list(dfAct$date),sum, na.rm=TRUE)
+StepsByDays<-aggregate(AMD$steps,list(AMD$date),sum, na.rm=TRUE)
 names(StepsByDays) <- c("date","steps")
 ```
 
-Ploting the histogram.
+Plot the histogram.
 
 
 ```r
@@ -56,7 +56,7 @@ Averaging number of steps for each interval. As a result get the dataframe **Ste
 
 
 ```r
-StepsByInt <- aggregate(dfAct$steps,list(dfAct$interval),mean,na.rm=TRUE)
+StepsByInt <- aggregate(AMD$steps,list(AMD$interval),mean,na.rm=TRUE)
 names(StepsByInt) <- c("interval","steps")
 ```
 
@@ -97,7 +97,7 @@ Counting number of the observations with missed value of variable steps.
 
 
 ```r
-q_na <- length(dfAct$steps[is.na(dfAct$steps)])
+q_na <- length(dfAct$steps[is.na(AMD$steps)])
 print(paste("Total number of missed obsevations =", q_na))
 ```
 
@@ -113,15 +113,15 @@ Changing NA values in dfAct to mean numbers of steps for this interval. Forming 
 aux <- merge(dfAct, StepsByInt, by = "interval")
 aux$steps.x[is.na(aux$steps.x)] <- round(aux$steps.y[is.na(aux$steps.x)])
 aux <- aux[order(aux$date,aux$interval),]
-dfActImp <- aux[c("steps.x","date","interval")]
-names(dfActImp) <- c("steps","date","interval")
+AMDImp <- aux[c("steps.x","date","interval")]
+names(AMDImp) <- c("steps","date","interval")
 ```
 
 Get the dataframe **StepsByDaysImp** as analogue of **StepsByDays** but with imputed NA values of steps.
 
 
 ```r
-StepsByDaysImp<-aggregate(dfActImp$steps,list(dfActImp$date),sum, na.rm=TRUE)
+StepsByDaysImp<-aggregate(AMDImp$steps,list(AMDImp$date),sum, na.rm=TRUE)
 names(StepsByDaysImp) <- c("date","steps")
 ```
 
@@ -155,25 +155,23 @@ print(paste("Median value of steps per day (NA imputed) =", mdstf))
 ## [1] "Median value of steps per day (NA imputed) = 10762"
 ```
 
-##Differences in activity patterns between weekdays and weekends
+##Differences in activity patterns between Weekdays and Weekends
 
-Plotting a chart to compare activity in weekends and weekdays.
-
+Plotting the chart to compare activity in weekends and weekdays.
 
 ```r
 Sys.setlocale(locale = "USA")
 ```
 
 ```r
-dfActImp$TypeOfDay <- as.factor(ifelse(weekdays((as.Date(dfActImp$date)))%in%c("Saturday","Sunday"),"weekend","weekday"))
+AMDImp$TypeOfDay <- as.factor(ifelse(weekdays((as.Date(AMDImp$date)))%in%c("Saturday","Sunday"),"weekend","weekday"))
 library(lattice)
-dfActImpWeek <- with(dfActImp, aggregate(steps,list(TypeOfDay,interval),mean))
-names(dfActImpWeek) <- c("TypeOfDay","interval", "steps") 
-mygraph <- xyplot(steps~interval|TypeOfDay, data = dfActImpWeek, type="l", layout=c(1,2),
+AMDImpWeek <- with(dfActImp, aggregate(steps,list(TypeOfDay,interval),mean))
+names(AMDImpWeek) <- c("TypeOfDay","interval", "steps") 
+mygraph <- xyplot(steps~interval|TypeOfDay, data = AMDImpWeek, type="l", layout=c(1,2),
                   main = "Effect of weekend on the number of steps",
                   ylab="Number of steps", xlab = "Interval")
 plot(mygraph)
 ```
 
 ![](Plot4.png)
-
